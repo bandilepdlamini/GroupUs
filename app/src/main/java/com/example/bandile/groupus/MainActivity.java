@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     Spinner spinner;
     ArrayList<String> spinnerArrayEven;
     ArrayList<String> spinnerArrayOdd;
+    ArrayList<String> evenNumbers;
+    ArrayList<String> oddNumbers;
     boolean grouped = false;
     private static NameCustomAdapter nameAdapter;
     private static GroupCustomAdapter groupAdapter;
@@ -68,19 +70,20 @@ public class MainActivity extends AppCompatActivity {
         //adapterList = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, names);
         //listview.setAdapter(adapterList);
 
-        spinnerArrayEven =  new ArrayList<String>();
-        spinnerArrayEven.add("2");
-        spinnerArrayEven.add("4");
-        spinnerArrayEven.add("6");
-        spinnerArrayEven.add("8");
-        spinnerArrayEven.add("10");
+        evenNumbers =  new ArrayList<>();
+        oddNumbers =  new ArrayList<>();
+        spinnerArrayEven =  new ArrayList<>();
+        spinnerArrayOdd =  new ArrayList<>();
 
-        spinnerArrayOdd =  new ArrayList<String>();
-        spinnerArrayOdd.add("1");
-        spinnerArrayOdd.add("3");
-        spinnerArrayOdd.add("5");
-        spinnerArrayOdd.add("7");
-        spinnerArrayOdd.add("9");
+        for(int i = 1; i <= 100; i++){
+            if(i%2 == 0){
+                evenNumbers.add("" + i);
+            }
+            else {
+                oddNumbers.add("" + i);
+            }
+        }
+
 
         name.addTextChangedListener(new TextWatcher() {
             @Override
@@ -173,26 +176,30 @@ public class MainActivity extends AppCompatActivity {
         while(!names.isEmpty()){
 
             for(int j = 0; j < max-1; j++){
+                if(names.size() > 0){
+                    random = r.nextInt(names.size());
+                    while(groupNames.contains(names.get(random))){
+                        random = r.nextInt(names.size());
+                    }
+                    groupNames = groupNames + names.get(random) + " - ";
+                    names.remove(random);
+                }
+            }
+
+            if(names.size() > 0) {
                 random = r.nextInt(names.size());
-                while(groupNames.contains(names.get(random))){
+                while (groupNames.contains(names.get(random))) {
                     random = r.nextInt(names.size());
                 }
-                groupNames = groupNames + names.get(random) + " - ";
+                groupNames = groupNames + names.get(random);
                 names.remove(random);
+
+                groups.add(groupNames);
+
+                groupNames = "";
+
+                i = i + max;
             }
-
-            random = r.nextInt(names.size());
-            while(groupNames.contains(names.get(random))){
-                random = r.nextInt(names.size());
-            }
-            groupNames = groupNames + names.get(random);
-            names.remove(random);
-
-            groups.add(groupNames);
-
-            groupNames = "";
-
-            i = i + max;
         }
 
         names = tempNames;
@@ -216,15 +223,25 @@ public class MainActivity extends AppCompatActivity {
             name.setText("");
         }
         if(names.size() % 2 == 0){
-            adapterSpinner = new ArrayAdapter<String>(
-                    MainActivity.this, android.R.layout.simple_spinner_item, spinnerArrayEven);
-            adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(adapterSpinner);
+            if(!evenNumbers.isEmpty()) {
+                String num = evenNumbers.get(0);
+                evenNumbers.remove(num);
+                spinnerArrayEven.add(num);
+                adapterSpinner = new ArrayAdapter<String>(
+                        MainActivity.this, android.R.layout.simple_spinner_item, spinnerArrayEven);
+                adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(adapterSpinner);
+            }
         }else{
-            adapterSpinner = new ArrayAdapter<String>(
-                    MainActivity.this, android.R.layout.simple_spinner_item, spinnerArrayOdd);
-            adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(adapterSpinner);
+            if(!oddNumbers.isEmpty()) {
+                String num = oddNumbers.get(0);
+                oddNumbers.remove(num);
+                spinnerArrayOdd.add(num);
+                adapterSpinner = new ArrayAdapter<String>(
+                        MainActivity.this, android.R.layout.simple_spinner_item, spinnerArrayOdd);
+                adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(adapterSpinner);
+            }
         }
     }
 
@@ -235,16 +252,46 @@ public class MainActivity extends AppCompatActivity {
             name.setText("");
         }
         if(names.size() % 2 == 0){
+            spinnerArrayEven.remove(spinnerArrayEven.size()-1);
+            addEvenNumber("" + (names.size()));
             adapterSpinner = new ArrayAdapter<String>(
                     MainActivity.this, android.R.layout.simple_spinner_item, spinnerArrayEven);
             adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapterSpinner);
         }else{
+            spinnerArrayOdd.remove(spinnerArrayOdd.size()-1);
+            addOddNumber("" + (names.size()));
             adapterSpinner = new ArrayAdapter<String>(
                     MainActivity.this, android.R.layout.simple_spinner_item, spinnerArrayOdd);
             adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(adapterSpinner);
         }
+    }
+
+    public void addEvenNumber(String num){
+        ArrayList<String> temp = new ArrayList<>();
+        for(int i = 0; i < evenNumbers.size(); i++){
+            if(Integer.parseInt(evenNumbers.get(i)) < Integer.parseInt(num)){
+                temp.add(evenNumbers.get(i));
+            }
+            else{
+                temp.add(num);
+            }
+        }
+        evenNumbers = temp;
+    }
+
+    public void addOddNumber(String num){
+        ArrayList<String> temp = new ArrayList<>();
+        for(int i = 0; i < oddNumbers.size(); i++){
+            if(Integer.parseInt(oddNumbers.get(i)) < Integer.parseInt(num)){
+                temp.add(oddNumbers.get(i));
+            }
+            else{
+                temp.add(num);
+            }
+        }
+        oddNumbers = temp;
     }
 
 }
